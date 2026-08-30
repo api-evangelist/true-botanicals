@@ -1,0 +1,21 @@
+generated: '2026-08-30'
+method: searched
+source: 'https://truebotanicals.com/ (site search for a developer/API pricing page), https://truebotanicals.com/llms.txt,
+  https://truebotanicals.com/agents.md'
+plan_count: 0
+note: 'True Botanicals publishes no API plans, tiers, quotas or developer pricing of any kind, because it does
+  not run a developer programme. It is a direct-to-consumer skincare retailer: the only prices it publishes are
+  product prices in its storefront catalogue. The machine surfaces this repo records — the UCP/MCP endpoint, the
+  Storefront GraphQL endpoint and the customer-accounts OAuth issuer — are provided by Shopify as part of the
+  merchant''s plan with Shopify and are not separately monetised or metered by True Botanicals. There is no
+  contact-sales gate either; there is simply nothing to buy.'
+plans: []
+evidence:
+- url: https://truebotanicals.com/llms.txt
+  status: 200
+  note: 'Describes agent access to the store in full and names no cost, tier, quota or key.'
+- url: https://truebotanicals.com/pages/faq
+  status: 404
+- url: https://developers.truebotanicals.com
+  status: 0
+  note: DNS does not resolve — no developer subdomain exists.

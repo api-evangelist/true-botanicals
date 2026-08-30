@@ -1,0 +1,45 @@
+generated: '2026-08-30'
+method: probed
+source: 'https://truebotanicals.com/.well-known/ucp, the x-shopify-ucp-mcp-api-version response header on
+  https://truebotanicals.com/api/ucp/mcp, and the versioned GraphQL path, 2026-08-30'
+versioning:
+- surface: https://truebotanicals.com/api/ucp/mcp
+  scheme: dated
+  current: '2026-08-25'
+  supported:
+  - version: '2026-08-25'
+    status: latest-stable
+    profile: https://tnbotanicals.myshopify.com/.well-known/ucp/2026-08-25
+  - version: '2026-04-08'
+    status: supported
+    profile: https://tnbotanicals.myshopify.com/.well-known/ucp/2026-04-08
+  - version: '2026-01-23'
+    status: supported
+    profile: https://tnbotanicals.myshopify.com/.well-known/ucp/2026-01-23
+  negotiation: 'The merchant profile at /.well-known/ucp enumerates every supported version with a per-version
+    profile URL; the served version is echoed on every response as x-shopify-ucp-mcp-api-version.'
+- surface: https://truebotanicals.com/api/2026-01/graphql.json
+  scheme: dated-in-path
+  current: '2026-01'
+  negotiation: The version is a path segment; there is no header negotiation.
+deprecation_policy:
+  published: false
+  sunset_header: false
+  deprecation_header: false
+  note: 'Three UCP versions are advertised as concurrently supported, which is a de-facto support window, but
+    True Botanicals publishes no deprecation policy, no retirement dates and no notice period, and no RFC 8594
+    Sunset or Deprecation header appeared on any probed response. A version simply disappearing from
+    supported_versions in /.well-known/ucp is the only signal an agent would get. No Deprecation pointer is
+    wired for this provider because there is no policy to point at.'
+status_page:
+  published: false
+  note: 'True Botanicals operates no status page. The underlying platform''s status page is
+    https://www.shopifystatus.com/, which belongs to Shopify and is deliberately not wired as a StatusPage
+    pointer for this provider — it would credit True Botanicals with an operational surface it does not run.'
+sla:
+  published: false
+changelog:
+  published: false
+  note: 'No dated changelog or release notes for any machine surface. The UCP version list is the closest thing
+    to release history and it carries no notes.'
+deprecated_operations: []

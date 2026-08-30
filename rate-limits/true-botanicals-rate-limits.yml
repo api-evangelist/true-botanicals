@@ -1,0 +1,35 @@
+generated: '2026-08-30'
+method: searched
+source: https://truebotanicals.com/llms.txt
+docs: https://truebotanicals.com/llms.txt
+limit_count: 0
+summary: 'A rate limit is asserted but never quantified. llms.txt states "Respect rate limits. The MCP endpoint
+  is rate-limited per IP. Back off on 429 responses." No number, no window, no burst and no reset are published,
+  and no rate-limit header appeared on any of the seven live responses observed on 2026-08-30 (200, 403 and 422
+  on the MCP endpoint; 200 on GraphQL). An agent therefore cannot budget — it can only discover the ceiling by
+  hitting it.'
+limits:
+- surface: https://truebotanicals.com/api/ucp/mcp
+  scope: per-ip
+  window: null
+  limit: null
+  burst: null
+  status_on_exhaustion: 429
+  documented: true
+  quantified: false
+  source: https://truebotanicals.com/llms.txt
+- surface: https://truebotanicals.com/api/2026-01/graphql.json
+  scope: unpublished
+  window: null
+  limit: null
+  burst: null
+  status_on_exhaustion: null
+  documented: false
+  quantified: false
+  note: 'Responses carry extensions.cost.requestedQueryCost (3 for a schema probe, 5 for a shop+products query),
+    which is the Shopify Storefront calculated-cost signal — a cost meter without a published budget. No
+    throttleStatus block was returned on the responses observed.'
+response_headers:
+  observed: []
+  note: 'No RateLimit-*, X-RateLimit-*, or Retry-After header was present on any observed response. The only
+    non-standard headers seen were x-shopify-ucp-mcp-api-version and x-request-id.'

@@ -1,0 +1,116 @@
+generated: '2026-08-30'
+method: probed
+source: 'https://truebotanicals.com/llms.txt, /agents.md, /robots.txt, /.well-known/ucp and live calls to
+  /api/ucp/mcp and /api/2026-01/graphql.json, 2026-08-30'
+scope: 'Cross-cutting runtime semantics of the two machine surfaces True Botanicals serves. Everything below was
+  observed on the wire or read from a document the store publishes; nothing is inferred from the Shopify or UCP
+  specifications where the store did not state it.'
+auth_style:
+  mcp: 'Anonymous for tools/list. tools/call requires a resolvable UCP agent profile URI in meta.ucp-agent.profile;
+    get_order additionally requires a bearer JWT.'
+  graphql: Anonymous for published catalog reads; no storefront access token needed on this host.
+  customer_accounts: OAuth 2.0 authorization code + PKCE against the Shopify-operated issuer for this shop.
+  detail: authentication/true-botanicals-authentication.yml
+idempotency:
+  supported: false
+  evidence: 'No Idempotency-Key header, no idempotency_key / client_reference_id field, and no idempotency
+    language appears in any of the 13 MCP tool input schemas, in llms.txt, or in agents.md. The three occurrences
+    of the string "idempot" in the tools/list payload are in prose describing that repeating a cart update is
+    safe, not a declared key mechanism.'
+  practical_guidance: 'Cart and checkout objects are addressed by server-issued ids (gid://shopify/Cart/...,
+    gid://shopify/Checkout/...), so an agent that retains the id from create_* and retries update_* against it
+    will not duplicate the resource. There is no protection against a duplicated create_cart / create_checkout.'
+pagination:
+  mcp:
+    style: cursor
+    params: ['catalog.pagination.cursor', 'catalog.pagination.limit']
+    note: 'search_catalog declares catalog.pagination as an object with a string cursor and an integer limit.
+      The response field carrying the next cursor is not described in the input schema and no output schema is
+      published, so the field name has to be discovered from a live result.'
+  graphql:
+    style: cursor
+    params: [first, last, after, before]
+    response_fields: [edges, node, cursor, pageInfo.hasNextPage, pageInfo.endCursor]
+    note: Relay connection pagination, observed in the introspected schema and in a live products(first:2) query.
+request_id_tracing:
+  supported: true
+  header: x-request-id
+  evidence: 'Observed on a live MCP response: x-request-id: df776f55-7b22-46f5-b3a3-ee8006044215-1788114168.'
+versioning:
+  mcp:
+    scheme: dated
+    current: '2026-08-25'
+    signalled_by: 'response header x-shopify-ucp-mcp-api-version, and supported_versions in /.well-known/ucp'
+    supported: ['2026-08-25', '2026-04-08', '2026-01-23']
+  graphql:
+    scheme: dated-in-path
+    current: '2026-01'
+    example: https://truebotanicals.com/api/2026-01/graphql.json
+  detail: lifecycle/true-botanicals-lifecycle.yml
+error_envelope:
+  mcp:
+    shape: JSON-RPC 2.0 error object
+    fields: [jsonrpc, id, error.code, error.message, error.data]
+    note: 'error.data is sometimes an object ({code, content, continue_url}) and sometimes a plain string —
+      the shape is not stable across error classes.'
+  graphql:
+    shape: GraphQL errors[]
+    fields: ['errors[].message', 'errors[].locations', 'errors[].path', 'errors[].extensions.code']
+  detail: errors/true-botanicals-problem-types.yml
+rate_limit_signaling:
+  documented: true
+  statement: 'llms.txt: "Respect rate limits. The MCP endpoint is rate-limited per IP. Back off on 429 responses."'
+  headers_observed: []
+  note: 'No RateLimit-*, X-RateLimit-* or Retry-After header appeared on any observed 200, 403 or 422 response.
+    An agent gets the 429 and nothing else — no budget, no reset time.'
+  detail: rate-limits/true-botanicals-rate-limits.yml
+money:
+  representation: 'Integer minor units paired with an ISO 4217 currency code — {"amount": 600, "currency": "USD"}
+    is $6.00.'
+  stated_in: every price-bearing MCP tool description
+  agent_rule: Convert to major units before quoting a price to a buyer; zero-decimal currencies such as JPY are
+    already whole units.
+buyer_consent:
+  required: true
+  statement: 'Both robots.txt and llms.txt state that checkout, payment and order placement must not be completed
+    automatically, and that any agent transacting on a buyer''s behalf must obtain explicit, contemporaneous human
+    approval before payment.'
+  enforcement: 'Stated as policy in published documents; not observed as a protocol-level gate, because the
+    pipeline did not and will not attempt a payment.'
+dry_run_mode:
+  supported: false
+  evidence: No test mode, sandbox, simulation flag or test payment instrument is published for this store.
+reversibility:
+  grade: documented
+  applies_to: write surface (cart and checkout)
+  operations:
+  - action: create_cart / update_cart
+    reversal: cancel_cart
+    operation_id: cancel_cart
+    window_stated: false
+    source: mcp/true-botanicals-tools-list.json
+  - action: create_checkout / update_checkout
+    reversal: cancel_checkout
+    operation_id: cancel_checkout
+    window_stated: false
+    source: mcp/true-botanicals-tools-list.json
+  - action: complete_checkout
+    reversal: none published
+    operation_id: null
+    window_stated: false
+    note: 'There is no refund, void or reverse tool in the MCP tool set, and get_order is read-only. Once
+      complete_checkout succeeds an agent has no programmatic way back — reversal is a human path through the
+      store''s refund policy at https://truebotanicals.com/policies/refund-policy.'
+  window_note: 'No reversal window is stated anywhere the pipeline could read. cancel_cart and cancel_checkout
+    are documented as available but their descriptions name no time limit or state precondition, so this grades
+    as documented and NOT verified. No window is asserted here, because inventing one on a checkout would cost
+    a buyer real money.'
+  agent_rule: 'Treat complete_checkout as the point of no return: everything before it is cancellable, nothing
+    after it is, and the human-approval requirement sits exactly on that boundary.'
+cross_links:
+  authentication: authentication/true-botanicals-authentication.yml
+  scopes: scopes/true-botanicals-scopes.yml
+  errors: errors/true-botanicals-problem-types.yml
+  lifecycle: lifecycle/true-botanicals-lifecycle.yml
+  rate_limits: rate-limits/true-botanicals-rate-limits.yml
+  conformance: conformance/true-botanicals-conformance.yml

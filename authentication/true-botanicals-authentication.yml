@@ -1,0 +1,81 @@
+generated: '2026-08-30'
+method: probed
+source: 'https://truebotanicals.com/.well-known/openid-configuration + /.well-known/oauth-authorization-server
+  (HTTP 200) and live unauthenticated calls to /api/ucp/mcp and /api/2026-01/graphql.json, 2026-08-30'
+summary: 'True Botanicals issues no API credentials of its own — there is no developer portal, no key signup
+  and no documented auth page. Two of its three machine surfaces are open to anonymous callers; the third,
+  Shopify customer accounts, is a standards-complete OAuth 2.0 / OpenID Connect authorization server operated
+  by Shopify and scoped to this shop.'
+schemes:
+- id: none-ucp-mcp
+  type: none
+  surface: https://truebotanicals.com/api/ucp/mcp
+  description: 'Discovery is anonymous but invocation is not. tools/list answered HTTP 200 with no Authorization
+    header on 2026-08-30. tools/call, however, requires a resolvable UCP agent profile in meta.ucp-agent.profile:
+    calling search_catalog with an unresolvable profile URI returned HTTP 422 and JSON-RPC error -32001
+    "UCP discovery failed" / profile_unreachable, and calling it with no meta at all returns the same -32001 with
+    invalid_profile_url. Order lookup is a further step up: get_order returned HTTP 403 and JSON-RPC -32000
+    AuthenticationRequired, "A valid JWT is required". So the practical auth model is agent-identity by published
+    profile document for catalog/cart/checkout, and a bearer JWT for order data.'
+  verified: probed
+- id: none-storefront-graphql
+  type: none
+  surface: https://truebotanicals.com/api/2026-01/graphql.json
+  description: 'The Shopify Storefront GraphQL endpoint answered full introspection and catalog queries with no
+    X-Shopify-Storefront-Access-Token header. Read access to published catalog data is anonymous on this host.'
+  verified: probed
+- id: shopify-customer-accounts-oidc
+  type: openIdConnect
+  surface: https://shopify.com/authentication/5451009
+  openIdConnectUrl: https://truebotanicals.com/.well-known/openid-configuration
+  description: 'OpenID Connect / OAuth 2.0 authorization server for True Botanicals customer accounts, discovered
+    at this merchant''s own well-known path and operated by Shopify for shop 5451009. Authorization-code flow with
+    PKCE; refresh tokens and RFC 7523 jwt-bearer grants supported.'
+  authorization_endpoint: https://shopify.com/authentication/5451009/oauth/authorize
+  token_endpoint: https://shopify.com/authentication/5451009/oauth/token
+  jwks_uri: https://shopify.com/authentication/5451009/.well-known/jwks.json
+  end_session_endpoint: https://shopify.com/authentication/5451009/logout
+  grant_types:
+  - authorization_code
+  - refresh_token
+  - 'urn:ietf:params:oauth:grant-type:jwt-bearer'
+  response_types:
+  - code
+  code_challenge_methods:
+  - S256
+  token_endpoint_auth_methods:
+  - client_secret_basic
+  - client_secret_post
+  id_token_signing_alg:
+  - RS256
+  scopes_file: scopes/true-botanicals-scopes.yml
+  verified: probed
+notes:
+- 'Client registration for the customer-accounts authorization server is not open — the discovery document
+  publishes no registration_endpoint, and Shopify issues client ids through the merchant admin. Third parties
+  cannot self-serve credentials against this issuer.'
+- 'No api-key, http-bearer or mutualTLS scheme is documented or observed anywhere on this provider''s surface.'
+- 'An agent that wants to transact here must itself publish a UCP agent profile at a fetchable URI — the
+  authentication burden sits on the caller''s discoverability, not on a credential the merchant issues.'
+- 'The JWT that get_order demands is minted through Shopify''s agent authentication flow, documented at
+  https://shopify.dev/docs/agents/get-started/authentication — a Shopify-platform credential, not a
+  True Botanicals one.'
+x-evidence:
+- url: https://truebotanicals.com/.well-known/openid-configuration
+  http_status: 200
+  fetched: '2026-08-30'
+- url: https://truebotanicals.com/.well-known/oauth-authorization-server
+  http_status: 200
+  fetched: '2026-08-30'
+- url: https://truebotanicals.com/api/ucp/mcp
+  http_status: 200
+  note: unauthenticated POST tools/list
+  fetched: '2026-08-30'
+- url: https://truebotanicals.com/api/ucp/mcp
+  http_status: 422
+  note: 'POST tools/call search_catalog with an unresolvable meta.ucp-agent.profile -> -32001 profile_unreachable'
+  fetched: '2026-08-30'
+- url: https://truebotanicals.com/api/ucp/mcp
+  http_status: 403
+  note: 'POST tools/call get_order without a JWT -> -32000 AuthenticationRequired'
+  fetched: '2026-08-30'

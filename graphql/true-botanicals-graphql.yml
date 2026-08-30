@@ -1,0 +1,31 @@
+generated: '2026-08-30'
+method: probed
+source: https://truebotanicals.com/api/2026-01/graphql.json (POST introspection, HTTP 200, unauthenticated, 2026-08-30)
+endpoint: https://truebotanicals.com/api/2026-01/graphql.json
+introspection:
+  gated: false
+  file: graphql/true-botanicals-storefront-introspection.json
+  types: 424
+  query_type: QueryRoot
+  mutation_type: Mutation
+ownership:
+  verified: true
+  evidence: 'The endpoint self-identifies: query {shop{name primaryDomain{url}}} returned name "True Botanicals"
+    and primaryDomain https://truebotanicals.com on 2026-08-30, and product queries returned this merchant''s
+    catalog (Renew Pure Radiance Oil, Renew Nourishing Cleanser).'
+x-provenance:
+  platform: Shopify
+  schema_authorship: 'The schema is version 2026-01 of the Shopify Storefront API — platform-authored and
+    identical across Shopify merchants. It is captured here because it is live and callable on this merchant''s
+    own host over this merchant''s data, not because True Botanicals designed it. The canonical documentation
+    is https://shopify.dev/docs/api/storefront.'
+x-evidence:
+- url: https://truebotanicals.com/api/2026-01/graphql.json
+  method: 'POST {__schema{queryType{name}}}'
+  http_status: 200
+  fetched: '2026-08-30'
+- url: https://truebotanicals.com/api/2026-01/graphql.json
+  method: POST full introspection query
+  http_status: 200
+  bytes: 693449
+  fetched: '2026-08-30'

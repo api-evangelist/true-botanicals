@@ -1,0 +1,24 @@
+generated: '2026-08-30'
+method: generated
+source: 'mcp/true-botanicals-tools-list.json — every operation named in these skills was read from the live
+  tools/list response on 2026-08-30; none is invented.'
+note: 'True Botanicals publishes no skills of its own. It does publish /agents.md (saved verbatim to
+  llms/true-botanicals-agents.md), which is agent guidance rather than a packaged skill, and its llms.txt
+  recommends Shopify''s cross-store skill at https://shop.app/SKILL.md — that one belongs to Shopify and is
+  deliberately not vendored here as a True Botanicals artifact.'
+skills:
+- name: true-botanicals-catalog-search
+  file: skills/true-botanicals-catalog-search.md
+  description: Search and resolve products in the True Botanicals storefront over UCP/MCP, without transacting.
+  api: True Botanicals UCP Agent Commerce (MCP)
+  operations: [search_catalog, lookup_catalog, get_product]
+  write_surface: false
+- name: true-botanicals-cart-and-checkout
+  file: skills/true-botanicals-cart-and-checkout.md
+  description: Build a cart and prepare a checkout, stopping at the human-approval boundary that this store
+    states in robots.txt and llms.txt.
+  api: True Botanicals UCP Agent Commerce (MCP)
+  operations: [create_cart, get_cart, update_cart, cancel_cart, create_checkout, get_checkout, update_checkout,
+    complete_checkout, cancel_checkout, get_order]
+  write_surface: true
+  irreversible_operation: complete_checkout

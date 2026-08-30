@@ -1,0 +1,56 @@
+generated: '2026-08-30'
+method: probed
+source: live GET probes of every /.well-known/ path on the truebotanicals.com and tnbotanicals.myshopify.com hosts, 2026-08-30
+hit_count: 3
+soft_404_control:
+  note: 'Negatives here are real. The Shopify storefront answers an unknown /.well-known/* path with HTTP 404
+    (a 4,264-byte Shopify error page), not a 200 catch-all, so a 404 recorded below is a genuine absence and a
+    200 recorded below is a genuinely served document.'
+  probe: https://truebotanicals.com/.well-known/api-catalog
+  status: 404
+  bytes: 4264
+hosts:
+- host: https://truebotanicals.com
+  documents:
+  - path: /.well-known/ucp
+    status: 200
+    file: true-botanicals-ucp.json
+    note: 'Universal Commerce Protocol merchant profile. Names this merchant explicitly — payment handler config
+      carries merchant_name "True Botanicals", merchant_origin truebotanicals.com, shop_id 5451009.'
+  - path: /.well-known/openid-configuration
+    status: 200
+    file: true-botanicals-openid-configuration.json
+    note: 'OIDC discovery for Shopify customer accounts, issuer https://shopify.com/authentication/5451009 —
+      scoped to this shop, served from this host, hosted by Shopify.'
+  - path: /.well-known/oauth-authorization-server
+    status: 200
+    file: true-botanicals-oauth-authorization-server.json
+    note: RFC 8414 authorization-server metadata; byte-identical to the OIDC discovery document.
+  - path: /.well-known/security.txt
+    status: 404
+  - path: /.well-known/api-catalog
+    status: 404
+  - path: /.well-known/ai-plugin.json
+    status: 404
+  - path: /.well-known/agent-card.json
+    status: 404
+  - path: /.well-known/agent.json
+    status: 404
+- host: https://tnbotanicals.myshopify.com
+  documents:
+  - path: /.well-known/security.txt
+    status: 404
+  - path: /.well-known/agent-card.json
+    status: 404
+  - path: /.well-known/agent.json
+    status: 404
+x-related:
+  - path: /llms.txt
+    status: 200
+    file: llms/true-botanicals-llms.txt
+  - path: /agents.md
+    status: 200
+    file: llms/true-botanicals-agents.md
+  - path: /sitemap_agentic_discovery.xml
+    status: 200
+    note: A one-entry sitemap whose only URL is /agents.md — the store advertises its agent instructions to crawlers.

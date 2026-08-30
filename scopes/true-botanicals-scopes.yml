@@ -1,0 +1,40 @@
+generated: '2026-08-30'
+method: probed
+source: https://truebotanicals.com/.well-known/openid-configuration (scopes_supported, HTTP 200, 2026-08-30)
+docs: https://shopify.dev/docs/api/customer
+issuer: https://shopify.com/authentication/5451009
+flows:
+- type: authorizationCode
+  authorizationUrl: https://shopify.com/authentication/5451009/oauth/authorize
+  tokenUrl: https://shopify.com/authentication/5451009/oauth/token
+  pkce: S256
+scopes:
+- name: openid
+  description: Standard OpenID Connect scope — requests an ID token identifying the signed-in customer.
+  standard: OIDC Core 1.0
+- name: email
+  description: Releases the customer's email and email_verified claims.
+  standard: OIDC Core 1.0
+- name: 'customer-account-api:full'
+  description: Full access to the Shopify Customer Account API on behalf of the signed-in customer — profile,
+    addresses, orders and subscriptions for this shop.
+  standard: Shopify
+- name: 'customer-account-mcp-api:full'
+  description: Full access to the Shopify Customer Account MCP API on behalf of the signed-in customer — the
+    authenticated counterpart to the anonymous UCP shopping MCP endpoint.
+  standard: Shopify
+claims_supported:
+- iss
+- sub
+- aud
+- exp
+- iat
+- nonce
+- sid
+- email
+- email_verified
+notes:
+- 'These are the only scopes this issuer advertises. There is no granular read/write split — customer-account
+  access is all-or-nothing at :full.'
+- 'The scopes govern customer-account access, not merchant/admin access. Nothing here grants an agent
+  privileged access to True Botanicals'' own store data.'

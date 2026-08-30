@@ -1,0 +1,116 @@
+generated: '2026-08-30'
+method: derived
+source: 'mcp/true-botanicals-tools-list.json (JSON Schema 2020-12 inputSchema of all 13 UCP tools) and
+  graphql/true-botanicals-storefront-introspection.json (424 types)'
+note: 'Derived from the input schemas only. The UCP MCP surface publishes no output schemas, so response-side
+  fields are recorded only where a tool description or an observed response named them. Nothing below is
+  inferred from the UCP specification where this store''s own schemas did not carry it.'
+id_scheme:
+  format: Shopify global id (GID) URI
+  example: 'gid://shopify/Checkout/abc123'
+  stated_in: 'the id parameter description on get_checkout, update_checkout, complete_checkout and cancel_checkout'
+  entities_using_gids: [Checkout, Cart, Order, Product, ProductVariant]
+entities:
+- name: Catalog
+  description: The searchable product surface of the store.
+  operations: [search_catalog, lookup_catalog, get_product]
+  fields:
+  - {name: query, type: string, note: free-text search intent}
+  - {name: filters.categories, type: array}
+  - {name: filters.price.min, type: integer, note: ISO 4217 minor units}
+  - {name: filters.price.max, type: integer, note: ISO 4217 minor units}
+  - {name: filters.available, type: boolean}
+  - {name: pagination.cursor, type: string}
+  - {name: pagination.limit, type: integer}
+- name: Product
+  description: A single sellable product with variant options.
+  operations: [get_product, lookup_catalog]
+  fields:
+  - {name: id, type: string, note: GID or merchant identifier}
+  - {name: selected, type: array, note: 'chosen variant options, each {name, label}'}
+  - {name: preferences, type: array}
+- name: Cart
+  description: A mutable collection of line items before checkout.
+  operations: [create_cart, get_cart, update_cart, cancel_cart]
+  fields:
+  - {name: id, type: string}
+  - {name: line_items, type: array, note: 'each {id, quantity, item}'}
+  - {name: buyer.email, type: string}
+  - {name: buyer.phone_number, type: string}
+  - {name: fulfillment.methods, type: array}
+  - {name: discounts.codes, type: array}
+- name: Checkout
+  description: 'The purchase transaction built from a cart. Terminal: complete_checkout has no published reversal.'
+  operations: [create_checkout, get_checkout, update_checkout, complete_checkout, cancel_checkout]
+  fields:
+  - {name: id, type: string}
+  - {name: cart_id, type: string, note: reference to the originating Cart}
+  - {name: line_items, type: array}
+  - {name: payment.instruments, type: array, note: 'each {id, handler_id, type, billing_address, credential, display, selected}'}
+  - {name: fulfillment.methods, type: array}
+  - {name: discounts.codes, type: array}
+  - {name: buyer.email, type: string}
+- name: Order
+  description: The completed purchase. Read-only over MCP and the only JWT-gated entity.
+  operations: [get_order]
+  fields:
+  - {name: id, type: string}
+  auth: bearer JWT required (observed HTTP 403 -32000 AuthenticationRequired without one)
+- name: PaymentInstrument
+  description: A payment method offered by one of the store's declared UCP payment handlers.
+  operations: [create_checkout, update_checkout, complete_checkout]
+  handlers_declared:
+  - {id: gpay, namespace: com.google.pay, source: well-known/true-botanicals-ucp.json}
+  - {id: shopify.card, namespace: dev.shopify.card, source: well-known/true-botanicals-ucp.json}
+  - {id: shop_pay, namespace: dev.shopify.shop_pay, source: well-known/true-botanicals-ucp.json}
+- name: BuyerContext
+  description: 'The locale/geography envelope every catalog, cart and checkout call carries; it drives pricing,
+    currency and availability.'
+  shared_by: [search_catalog, lookup_catalog, get_product, create_cart, update_cart, create_checkout, update_checkout]
+  fields:
+  - {name: address_country, type: string}
+  - {name: address_region, type: string}
+  - {name: postal_code, type: string}
+  - {name: currency, type: string, note: ISO 4217}
+  - {name: language, type: string}
+  - {name: intent, type: string}
+- name: Attribution
+  description: Marketing attribution carried on cart and checkout creation.
+  shared_by: [create_cart, update_cart, create_checkout, update_checkout]
+  fields:
+  - {name: referring_domain, type: string}
+  - {name: click_id_tag, type: string}
+  - {name: click_id_value, type: string}
+  - {name: activity_id_tag, type: string}
+  - {name: activity_id_value, type: string}
+  - {name: utm_campaign, type: string}
+  - {name: utm_source, type: string}
+  - {name: utm_medium, type: string}
+  - {name: utm_content, type: string}
+  - {name: utm_term, type: string}
+- name: AgentProfile
+  description: 'The caller''s own UCP identity document. Not store data — but it is a required participant in
+    every tools/call, and an unresolvable one is the store''s single most common error.'
+  field: meta.ucp-agent.profile
+  required_on: every tools/call
+relationships:
+- {from: Cart, to: LineItem, type: has_many, via: line_items}
+- {from: Checkout, to: LineItem, type: has_many, via: line_items}
+- {from: Checkout, to: Cart, type: belongs_to, via: cart_id}
+- {from: Checkout, to: PaymentInstrument, type: has_many, via: payment.instruments}
+- {from: Checkout, to: FulfillmentMethod, type: has_many, via: fulfillment.methods}
+- {from: Cart, to: FulfillmentMethod, type: has_many, via: fulfillment.methods}
+- {from: LineItem, to: Product, type: belongs_to, via: item}
+- {from: Cart, to: Buyer, type: has_one, via: buyer}
+- {from: Checkout, to: Buyer, type: has_one, via: buyer}
+- {from: Cart, to: Attribution, type: has_one, via: attribution}
+- {from: Checkout, to: Attribution, type: has_one, via: attribution}
+- {from: Order, to: Checkout, type: belongs_to, via: 'completion of complete_checkout (not a published field)'}
+- {from: Catalog, to: Product, type: has_many, via: search/lookup results}
+graphql_counterpart:
+  endpoint: https://truebotanicals.com/api/2026-01/graphql.json
+  root_types: [QueryRoot, Mutation]
+  type_count: 424
+  note: 'The Storefront GraphQL schema models the same commerce core far more richly (Cart, Checkout, Product,
+    ProductVariant, Collection, Order, Customer and their connections). It is platform-authored by Shopify and
+    is captured in graphql/ rather than restated here.'

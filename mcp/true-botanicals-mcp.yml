@@ -1,0 +1,210 @@
+generated: '2026-08-30'
+method: probed
+source: https://truebotanicals.com/api/ucp/mcp (JSON-RPC tools/list, HTTP 200, unauthenticated, 2026-08-30)
+status: published
+deployment:
+  mode: remote
+  endpoint: https://truebotanicals.com/api/ucp/mcp
+  auth: none
+  verified: probed
+server:
+  name: true-botanicals-ucp-shopping
+  transport: http
+  url: https://truebotanicals.com/api/ucp/mcp
+  canonical_endpoint: https://tnbotanicals.myshopify.com/api/ucp/mcp
+  canonical_endpoint_note: The /.well-known/ucp merchant profile names the myshopify.com host as the service endpoint;
+    llms.txt and robots.txt both advertise the truebotanicals.com host. Both answered tools/list with a byte-identical
+    200 on 2026-08-30.
+  protocol: MCP over JSON-RPC 2.0
+  discovery: https://truebotanicals.com/.well-known/ucp
+  tools_list_file: mcp/true-botanicals-tools-list.json
+x-provenance:
+  platform: Shopify
+  note: 'This MCP server is platform-native: Shopify serves the Universal Commerce Protocol shopping service on
+    behalf of every merchant store, and the tool set and input schemas are authored by Shopify/UCP, not by True
+    Botanicals. It is recorded here because it is served from truebotanicals.com, is scoped to this merchant (shop
+    id 5451009, merchant_name "True Botanicals" in the UCP payment handler config), and returns this merchant catalog.
+    It is not evidence of an in-house API program.'
+  shop_id: '5451009'
+  ucp_version: '2026-08-25'
+x-evidence:
+- url: https://truebotanicals.com/api/ucp/mcp
+  method: POST tools/list
+  http_status: 200
+  content_type: application/json
+  tools_returned: 13
+  fetched: '2026-08-30'
+- url: https://tnbotanicals.myshopify.com/api/ucp/mcp
+  method: POST tools/list
+  http_status: 200
+  content_type: application/json
+  tools_returned: 13
+  fetched: '2026-08-30'
+- url: https://truebotanicals.com/.well-known/ucp
+  method: GET
+  http_status: 200
+  content_type: application/json
+  fetched: '2026-08-30'
+tools:
+- name: get_checkout
+  category: checkout
+  description: 'Returns details about the checkout, including line items, totals, and any applicable discounts or
+    taxes. Prices in the response are integers in the currency''s ISO 4217 minor units, paired with a currency code:
+    {"amount": 600, "currency":...'
+  input_schema_properties:
+  - id
+  - meta
+  required:
+  - meta
+  - id
+  schema_source: mcp/true-botanicals-tools-list.json
+- name: create_checkout
+  category: checkout
+  description: 'Creates a checkout. Returns checkout details, including line items, totals, and any applicable discounts
+    or taxes. Prices in the response are integers in the currency''s ISO 4217 minor units, paired with a currency
+    code: {"amount": 600, "...'
+  input_schema_properties:
+  - checkout
+  - meta
+  required:
+  - meta
+  - checkout
+  schema_source: mcp/true-botanicals-tools-list.json
+- name: update_checkout
+  category: checkout
+  description: 'Updates a checkout. Returns checkout details, including line items, totals, and any applicable discounts
+    or taxes. Prices in the response are integers in the currency''s ISO 4217 minor units, paired with a currency
+    code: {"amount": 600, "...'
+  input_schema_properties:
+  - checkout
+  - id
+  - meta
+  required:
+  - meta
+  - checkout
+  - id
+  schema_source: mcp/true-botanicals-tools-list.json
+- name: complete_checkout
+  category: checkout
+  description: Completes a checkout and returns the checkout result. Returns details about the completed checkout,
+    including order ID, Thank You Page URL, or any errors encountered. Prices in the response are integers in the
+    currency's ISO 4217 minor u...
+  input_schema_properties:
+  - checkout
+  - id
+  - meta
+  required:
+  - meta
+  - id
+  - checkout
+  schema_source: mcp/true-botanicals-tools-list.json
+- name: cancel_checkout
+  category: checkout
+  description: 'Cancels a checkout. Prices in the response are integers in the currency''s ISO 4217 minor units,
+    paired with a currency code: {"amount": 600, "currency": "USD"} is $6.00 and {"amount": 2500, "currency": "USD"}
+    is $25.00. Convert to major ...'
+  input_schema_properties:
+  - id
+  - meta
+  required:
+  - meta
+  - id
+  schema_source: mcp/true-botanicals-tools-list.json
+- name: get_cart
+  category: cart
+  description: 'Get the cart contents Prices in the response are integers in the currency''s ISO 4217 minor units,
+    paired with a currency code: {"amount": 600, "currency": "USD"} is $6.00 and {"amount": 2500, "currency": "USD"}
+    is $25.00. Convert to majo...'
+  input_schema_properties:
+  - id
+  - meta
+  required:
+  - meta
+  - id
+  schema_source: mcp/true-botanicals-tools-list.json
+- name: create_cart
+  category: cart
+  description: 'Creates a new cart Prices in the response are integers in the currency''s ISO 4217 minor units,
+    paired with a currency code: {"amount": 600, "currency": "USD"} is $6.00 and {"amount": 2500, "currency": "USD"}
+    is $25.00. Convert to major u...'
+  input_schema_properties:
+  - cart
+  - meta
+  required:
+  - meta
+  - cart
+  schema_source: mcp/true-botanicals-tools-list.json
+- name: update_cart
+  category: cart
+  description: 'Perform updates to a cart. Prices in the response are integers in the currency''s ISO 4217 minor
+    units, paired with a currency code: {"amount": 600, "currency": "USD"} is $6.00 and {"amount": 2500, "currency":
+    "USD"} is $25.00. Convert to...'
+  input_schema_properties:
+  - cart
+  - id
+  - meta
+  required:
+  - meta
+  - cart
+  - id
+  schema_source: mcp/true-botanicals-tools-list.json
+- name: cancel_cart
+  category: cart
+  description: 'Cancels a cart. Prices in the response are integers in the currency''s ISO 4217 minor units, paired
+    with a currency code: {"amount": 600, "currency": "USD"} is $6.00 and {"amount": 2500, "currency": "USD"} is
+    $25.00. Convert to major unit...'
+  input_schema_properties:
+  - id
+  - meta
+  required:
+  - meta
+  - id
+  schema_source: mcp/true-botanicals-tools-list.json
+- name: get_order
+  category: order
+  description: 'Get the details of an order Prices in the response are integers in the currency''s ISO 4217 minor
+    units, paired with a currency code: {"amount": 600, "currency": "USD"} is $6.00 and {"amount": 2500, "currency":
+    "USD"} is $25.00. Convert t...'
+  input_schema_properties:
+  - id
+  - meta
+  required:
+  - meta
+  - id
+  schema_source: mcp/true-botanicals-tools-list.json
+- name: search_catalog
+  category: catalog
+  description: Search for products from the online store, hosted on Shopify. This tool can be used to search for
+    products using natural language queries, specific filter criteria, or both. At least one of query or filters
+    must be provided. Results are ...
+  input_schema_properties:
+  - catalog
+  - meta
+  required:
+  - meta
+  - catalog
+  schema_source: mcp/true-botanicals-tools-list.json
+- name: lookup_catalog
+  category: catalog
+  description: 'Look up multiple products or variants by identifier. Use this tool to resolve multiple product/variant
+    IDs in a single request. Supports: - Product IDs (gid://shopify/Product/...): Returns product with match: "featured"
+    - Variant IDs (gi...'
+  input_schema_properties:
+  - catalog
+  - meta
+  required:
+  - meta
+  - catalog
+  schema_source: mcp/true-botanicals-tools-list.json
+- name: get_product
+  category: catalog
+  description: Retrieve complete product detail by identifier. Returns a singular product with a relevant set of
+    variants, exact pricing, and real-time availability. Supports interactive option selection via selected and
+    preferences parameters for vari...
+  input_schema_properties:
+  - catalog
+  - meta
+  required:
+  - meta
+  - catalog
+  schema_source: mcp/true-botanicals-tools-list.json

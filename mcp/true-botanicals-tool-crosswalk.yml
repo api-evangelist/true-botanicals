@@ -1,0 +1,147 @@
+generated: '2026-08-30'
+method: derived
+source: 'mcp/true-botanicals-tools-list.json (13 live UCP tools) bound against
+  graphql/true-botanicals-storefront-introspection.json (34 QueryRoot fields, 41 Mutation fields), both fetched
+  2026-08-30'
+note: 'This provider ships no OpenAPI, so the crosswalk binds MCP tools to GraphQL root fields instead of to
+  operationIds. Both surfaces are live and unauthenticated on truebotanicals.com and both project the same
+  commerce core, but neither is a superset of the other — that divergence is what this file records. Bindings
+  are semantic, derived from field names and the introspected schema; none was executed as a mutation, so every
+  write-side confidence is medium at best and no row asserts response-shape equivalence.'
+surfaces:
+  mcp:
+    url: https://truebotanicals.com/api/ucp/mcp
+    gated: false
+    note: tools/list anonymous; tools/call requires a resolvable UCP agent profile, get_order additionally a JWT
+    tools: 13
+  graphql:
+    url: https://truebotanicals.com/api/2026-01/graphql.json
+    gated: false
+    note: introspection and catalog reads answered with no storefront access token
+    query_fields: 34
+    mutation_fields: 41
+  openapi:
+    present: false
+    note: No OpenAPI, Swagger, gRPC or WSDL contract is published by this provider or served on its hosts.
+crosswalk:
+- tool: search_catalog
+  category: catalog
+  graphql: [products, search, predictiveSearch]
+  binding: graphql
+  confidence: high
+  note: 'GraphQL splits what UCP fuses — products for a filtered connection, search for storefront relevance
+    search, predictiveSearch for typeahead. UCP''s single query field maps onto all three.'
+- tool: lookup_catalog
+  category: catalog
+  graphql: [nodes, products]
+  binding: graphql
+  confidence: medium
+  note: Multi-identifier resolution; GraphQL exposes it as the generic nodes(ids:) field rather than a catalog verb.
+- tool: get_product
+  category: catalog
+  graphql: [product, productByHandle]
+  binding: graphql
+  confidence: high
+- tool: create_cart
+  category: cart
+  graphql: [cartCreate]
+  binding: graphql
+  confidence: high
+- tool: get_cart
+  category: cart
+  graphql: [cart]
+  binding: graphql
+  confidence: high
+- tool: update_cart
+  category: cart
+  graphql: [cartLinesAdd, cartLinesUpdate, cartLinesRemove, cartBuyerIdentityUpdate, cartDiscountCodesUpdate,
+    cartSelectedDeliveryOptionsUpdate, cartDeliveryAddressesUpdate, cartAttributesUpdate, cartNoteUpdate]
+  binding: graphql
+  confidence: medium
+  note: 'The clearest divergence in the file. One UCP tool fans out to nine GraphQL mutations; an agent on
+    GraphQL must know which mutation each field change belongs to, an agent on UCP does not.'
+- tool: cancel_cart
+  category: cart
+  graphql: []
+  binding: none
+  confidence: low
+  note: 'No cartDelete/cartCancel mutation exists in the 2026-01 schema. cartRemovePersonalData is the nearest
+    field and it is not equivalent — it scrubs buyer data, it does not void the cart. Recorded as unbound
+    rather than mapped to something that would mislead.'
+- tool: create_checkout
+  category: checkout
+  graphql: [cartPrepareForCompletion]
+  binding: graphql
+  confidence: medium
+  note: 'The 2026-01 Storefront schema has no Checkout object — Shopify folded checkout into Cart. UCP still
+    models checkout as its own entity with its own id, so this binding is conceptual, not structural.'
+- tool: get_checkout
+  category: checkout
+  graphql: [cart, cartCompletionAttempt]
+  binding: graphql
+  confidence: low
+- tool: update_checkout
+  category: checkout
+  graphql: [cartPaymentUpdate, cartBillingAddressUpdate, cartSelectedDeliveryOptionsUpdate,
+    cartDeliveryAddressesReplace]
+  binding: graphql
+  confidence: medium
+- tool: complete_checkout
+  category: checkout
+  graphql: [cartSubmitForCompletion]
+  binding: graphql
+  confidence: medium
+  note: 'Both are terminal. Neither surface publishes a reversal for it.'
+- tool: cancel_checkout
+  category: checkout
+  graphql: []
+  binding: none
+  confidence: low
+  note: No cart/checkout cancellation mutation exists in the 2026-01 schema.
+- tool: get_order
+  category: order
+  graphql: []
+  binding: none
+  confidence: low
+  note: 'Order lookup is not on the Storefront schema''s QueryRoot at all — orders hang off the Customer object
+    and need a customer access token. The UCP tool needs a bearer JWT. Same data, two different credentials.'
+mcp_only:
+- tool: cancel_cart
+  reason: No cart-void mutation exists in the Storefront GraphQL schema.
+- tool: cancel_checkout
+  reason: No checkout-cancel mutation exists in the Storefront GraphQL schema.
+- tool: get_order
+  reason: 'Not reachable from QueryRoot; the GraphQL path to an order runs through customer authentication.'
+graphql_only:
+- capability: content
+  fields: [article, articles, blog, blogByHandle, blogs, page, pageByHandle, pages, menu]
+  reason: 'The UCP shopping service models commerce only. Editorial content — this store''s blog and pages —
+    has no MCP tool.'
+- capability: merchandising
+  fields: [collection, collectionByHandle, collections, productRecommendations, productTags, productTypes]
+  reason: Collection browsing and recommendations are GraphQL-only; UCP exposes search and lookup, not curation.
+- capability: customer
+  fields: [customer, customerCreate, customerUpdate, customerAccessTokenCreate, customerAccessTokenRenew,
+    customerAccessTokenDelete, customerRecover, customerReset, customerActivate, customerAddressCreate,
+    customerAddressUpdate, customerAddressDelete, customerDefaultAddressUpdate]
+  reason: 'Account lifecycle is entirely GraphQL + the customer-accounts OIDC issuer; no UCP tool touches it.'
+- capability: store-metadata
+  fields: [shop, localization, locations, paymentSettings, publicApiVersions, sitemap, urlRedirects, metaobject,
+    metaobjects]
+  reason: Store configuration and metadata have no MCP equivalent.
+- capability: gift-cards
+  fields: [cartGiftCardCodesAdd, cartGiftCardCodesRemove, cartGiftCardCodesUpdate]
+  reason: 'UCP models discounts.codes but no gift-card instrument.'
+- capability: shop-pay-session
+  fields: [shopPayPaymentRequestSessionCreate, shopPayPaymentRequestSessionSubmit]
+  reason: Shop Pay is a declared UCP payment handler, but its session mutations are GraphQL-only.
+coverage:
+  mcp_tools: 13
+  mcp_tools_bound: 10
+  mcp_only: 3
+  graphql_query_fields: 34
+  graphql_mutation_fields: 41
+  graphql_fields_bound: 24
+  graphql_only_capabilities: 6
+  rest_operations: 0
+  rest_operations_with_tool: 0

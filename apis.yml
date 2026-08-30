@@ -1,18 +1,71 @@
 aid: true-botanicals
 name: True Botanicals
-description: 'True Botanicals is a company surfaced via the API Evangelist harvest backlog (source: secondary-market)
-  and added to the network as a stub for full-pipeline profiling.'
+description: 'True Botanicals is a clean-luxury skincare company selling clinically tested, MADE SAFE certified
+  face and body products direct to consumers from truebotanicals.com. It is not a developer-tools company and
+  publishes no developer portal, API keys or SDKs; its machine-readable surface is the agent-commerce layer its
+  Shopify storefront exposes on its own domain — an llms.txt and agents.md at the site root, a Universal Commerce
+  Protocol (UCP) merchant profile at /.well-known/ucp, an unauthenticated MCP endpoint at /api/ucp/mcp serving 13
+  catalog, cart, checkout and order tools, a keyless Shopify Storefront GraphQL endpoint, and OAuth 2.0 /
+  OpenID Connect discovery documents for Shopify customer accounts. Every artifact in this repo was probed live
+  from truebotanicals.com; the schemas behind them are platform-authored by Shopify and shared with every Shopify
+  merchant, and are recorded here as served, not as contracts True Botanicals authored.'
+image: https://truebotanicals.com/cdn/shop/files/TB_True_Botanicals_f873166b-61da-41ce-8c3d-ea2ab3565a12.png?v=1772667499
 url: https://raw.githubusercontent.com/api-evangelist/true-botanicals/refs/heads/main/apis.yml
 x-type: company
 x-source: harvest:secondary-market
-x-tier: stub
-x-tier-reason: harvest
+x-tier: profiled
+x-tier-reason: enrichment-pass-2026-08-30
 specificationVersion: '0.20'
 created: '2026-08-30'
 modified: '2026-08-30'
 tags:
 - Company
-apis: []
+- Retail
+- E-Commerce
+- Beauty
+- Skincare
+- Consumer Goods
+- Direct To Consumer
+- Agentic Commerce
+- Shopify
+- MCP
+- Universal Commerce Protocol
+apis:
+- name: True Botanicals UCP Agent Commerce (MCP)
+  description: 'The Universal Commerce Protocol shopping service True Botanicals serves at its own domain. A POST
+    to /api/ucp/mcp answers an unauthenticated MCP tools/list with 13 tools — search_catalog, lookup_catalog,
+    get_product, create_cart, get_cart, update_cart, cancel_cart, create_checkout, get_checkout, update_checkout,
+    complete_checkout, cancel_checkout and get_order — each carrying a JSON Schema 2020-12 inputSchema. Checkout
+    completion requires contemporaneous human approval; the store states this in both robots.txt and llms.txt.'
+  humanURL: https://truebotanicals.com/agents.md
+  baseURL: https://truebotanicals.com/api/ucp/mcp
+  tags:
+  - Agentic Commerce
+  - MCP
+  - UCP
+  - Retail
+  properties:
+  - type: MCPServer
+    url: mcp/true-botanicals-mcp.yml
+  - type: ToolCrosswalk
+    url: mcp/true-botanicals-tool-crosswalk.yml
+  - type: Documentation
+    url: https://truebotanicals.com/agents.md
+- name: True Botanicals Storefront GraphQL (Shopify)
+  description: 'The Shopify Storefront GraphQL API as served on True Botanicals'' own domain. Introspection and
+    catalog queries answered keyless on 2026-08-30 (424 types; shop.name returned "True Botanicals"), so the
+    endpoint is a live, callable read surface over this merchant''s catalog. The schema itself is version 2026-01
+    of Shopify''s platform Storefront API, identical across Shopify merchants — recorded here as served by this
+    host, not as a contract True Botanicals authored.'
+  humanURL: https://shopify.dev/docs/api/storefront
+  baseURL: https://truebotanicals.com/api/2026-01/graphql.json
+  tags:
+  - GraphQL
+  - Retail
+  - E-Commerce
+  properties:
+  - type: GraphQL
+    url: graphql/true-botanicals-graphql.yml
 maintainers:
 - FN: Kin Lane
   email: kin@apievangelist.com
@@ -20,4 +73,93 @@ maintainers:
   email: info@apis.io
 common:
 - type: Website
-  url: https://www.nasdaqprivatemarket.com/
+  url: https://truebotanicals.com/
+- type: Documentation
+  url: https://truebotanicals.com/agents.md
+- type: Support
+  url: https://truebotanicals.com/pages/contact-us
+- type: Login
+  url: https://truebotanicals.com/account/login
+- type: Blog
+  url: https://truebotanicals.com/blogs/news
+- type: TermsOfService
+  url: https://truebotanicals.com/policies/terms-of-service
+- type: PrivacyPolicy
+  url: https://truebotanicals.com/policies/privacy-policy
+- type: LLMsTxt
+  url: llms/true-botanicals-llms.txt
+- type: MCPServer
+  url: mcp/true-botanicals-mcp.yml
+- type: WellKnown
+  url: well-known/true-botanicals-well-known.yml
+- type: Authentication
+  url: authentication/true-botanicals-authentication.yml
+- type: OAuthScopes
+  url: scopes/true-botanicals-scopes.yml
+- type: Conformance
+  url: conformance/true-botanicals-conformance.yml
+- type: Conventions
+  url: conventions/true-botanicals-conventions.yml
+- type: Lifecycle
+  url: lifecycle/true-botanicals-lifecycle.yml
+- type: RateLimits
+  url: rate-limits/true-botanicals-rate-limits.yml
+- type: Plans
+  url: plans/true-botanicals-plans-pricing.yml
+- type: DataModel
+  url: data-model/true-botanicals-data-model.yml
+- type: ErrorCatalog
+  url: errors/true-botanicals-problem-types.yml
+- type: AgentSkill
+  url: skills/_index.yml
+- type: DomainSecurity
+  url: security/true-botanicals-domain-security.yml
+x-pointer-liveness:
+  checked: '2026-08-30'
+  method: 'GET with a browser User-Agent, following redirects; body inspected, not just the status code'
+  pointers:
+  - url: https://truebotanicals.com/
+    status: 200
+  - url: https://truebotanicals.com/agents.md
+    status: 200
+    content_type: text/markdown
+  - url: https://truebotanicals.com/pages/contact-us
+    status: 200
+    note: 'Real page, <title>Contact Us | True Botanicals</title>'
+  - url: https://truebotanicals.com/blogs/news
+    status: 200
+    note: 'Real blog, <title>The Ritual | An Exploration Of Self-care</title>'
+  - url: https://truebotanicals.com/policies/terms-of-service
+    status: 200
+  - url: https://truebotanicals.com/policies/privacy-policy
+    status: 200
+  - url: https://truebotanicals.com/account/login
+    status: 200
+    note: 'Returned 406 to a plain crawler UA and 200 to a browser UA — an edge bot policy, not a dead page.'
+  - url: https://truebotanicals.com/api/ucp/mcp
+    status: 200
+    note: POST tools/list, 13 tools
+  - url: https://truebotanicals.com/api/2026-01/graphql.json
+    status: 200
+    note: POST introspection, 424 types
+  - url: https://shopify.dev/docs/api/storefront
+    status: 200
+    note: humanURL for the GraphQL entry; third-party platform documentation, labelled as such in the entry description.
+  not_wired:
+  - url: https://truebotanicals.com/pages/faq
+    status: 404
+    reason: No FAQ/help page exists, so no HelpCenter pointer was emitted.
+  - url: https://developers.truebotanicals.com
+    status: 0
+    reason: DNS does not resolve; no DeveloperPortal pointer was emitted.
+  - url: https://truebotanicals.com/.well-known/security.txt
+    status: 404
+    reason: No SecurityTxt or Security pointer was emitted.
+  - url: https://truebotanicals.com/.well-known/agent-card.json
+    status: 404
+    reason: No AgentCard pointer and no a2a/ artifact were written.
+x-enrichment:
+  date: '2026-08-30'
+  status: enriched
+  artifacts_added: 24
+  pass: local-v1

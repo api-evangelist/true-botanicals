@@ -1,0 +1,69 @@
+generated: '2026-08-30'
+method: probed
+source: 'observed error responses from https://truebotanicals.com/api/ucp/mcp and
+  https://truebotanicals.com/api/2026-01/graphql.json, 2026-08-30'
+format: jsonrpc2
+format_note: 'Not RFC 9457. No application/problem+json response was produced by any surface. MCP errors use the
+  JSON-RPC 2.0 error object; GraphQL errors use the spec errors[] envelope. Both are correct for their protocol,
+  and both are recorded below as observed rather than as documented — True Botanicals publishes no error
+  reference of its own.'
+envelopes:
+- surface: https://truebotanicals.com/api/ucp/mcp
+  shape: '{"jsonrpc":"2.0","id":<id>,"error":{"code":<int>,"message":<string>,"data":<object|string>}}'
+- surface: https://truebotanicals.com/api/2026-01/graphql.json
+  shape: '{"errors":[{"message":...,"locations":[...],"path":[...],"extensions":{"code":...}}]}'
+  note: GraphQL field errors return HTTP 200 with a populated errors[]; the status code is not the error signal.
+problem_types:
+- id: ucp-discovery-failed-invalid-profile-url
+  code: -32001
+  http_status: 422
+  title: UCP discovery failed
+  data_code: invalid_profile_url
+  detail: 'Unable to fetch agent profile: Missing profile uri'
+  observed: true
+  trigger: 'A tools/call with no meta.ucp-agent.profile in the arguments.'
+  remediation: 'Publish a UCP agent profile document at a fetchable https URI and pass it as
+    meta.ucp-agent.profile on every tools/call.'
+- id: ucp-discovery-failed-profile-unreachable
+  code: -32001
+  http_status: 422
+  title: UCP discovery failed
+  data_code: profile_unreachable
+  detail: 'Unable to fetch agent profile: Http error'
+  observed: true
+  trigger: 'A tools/call whose meta.ucp-agent.profile URI does not resolve to a fetchable document.'
+  remediation: 'Serve the agent profile at a URL that returns 200 to the store''s own fetcher before retrying.'
+- id: authentication-required
+  code: -32000
+  http_status: 403
+  title: AuthenticationRequired
+  detail: 'Unauthorized: A valid JWT is required to call get_order. See
+    https://shopify.dev/docs/agents/get-started/authentication for instructions on generating a token and
+    authenticating your requests.'
+  observed: true
+  trigger: 'Calling get_order without a bearer JWT.'
+  remediation: 'Mint a Shopify agent token per shopify.dev/docs/agents/get-started/authentication and send it
+    on the request.'
+- id: rate-limited
+  http_status: 429
+  title: Too Many Requests
+  observed: false
+  documented: true
+  documented_in: https://truebotanicals.com/llms.txt
+  detail: 'llms.txt states the MCP endpoint is rate-limited per IP and instructs agents to back off on 429.
+    The pipeline did not trigger one and does not attempt to.'
+  remediation: Back off and retry; no Retry-After header is published or observed.
+- id: graphql-undefined-field
+  http_status: 200
+  title: Field does not exist on type
+  extensions_code: undefinedField
+  detail: "Field 'nope' doesn't exist on type 'QueryRoot'"
+  observed: true
+  trigger: Querying a field absent from the 2026-01 Storefront schema.
+  remediation: 'Validate against graphql/true-botanicals-storefront-introspection.json before sending.'
+gaps:
+- 'No published error reference. Every entry above was obtained by provoking the error, not by reading a
+  document, so this catalogue is a floor and not a census.'
+- 'error.data is polymorphic — an object for -32001, a bare string for -32000. An agent cannot parse it
+  uniformly.'
+- 'No Retry-After, RateLimit-* or X-RateLimit-* header accompanies any error response.'

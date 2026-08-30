@@ -64,5 +64,30 @@
 > Full detail: **[Where this data comes from](https://apievangelist.com/about/where-our-data-comes-from)**
 <!-- API-EVANGELIST-PROVENANCE:END -->
 
-True Botanicals is a company surfaced via the API Evangelist harvest backlog (source: secondary-market) and added to the network as a stub for full-pipeline profiling.
-- https://www.nasdaqprivatemarket.com/
+True Botanicals is a clean-luxury skincare company selling clinically tested, MADE SAFE certified face and
+body products direct to consumers from [truebotanicals.com](https://truebotanicals.com/). It is not a
+developer-tools company: there is no developer portal, no API keys, no SDKs and no API pricing, and this
+profile does not claim otherwise.
+
+What it does have is an agent-commerce surface, served on its own domain by its Shopify storefront and
+probed live on 2026-08-30:
+
+| Surface | URL | Result |
+|---|---|---|
+| Agent instructions | `/llms.txt`, `/agents.md` | 200 — a real agent-instruction document, advertised from `robots.txt` and a dedicated agentic-discovery sitemap |
+| UCP merchant profile | `/.well-known/ucp` | 200 — Universal Commerce Protocol `2026-08-25`, naming merchant "True Botanicals", shop 5451009 |
+| MCP endpoint | `/api/ucp/mcp` | 200 — `tools/list` returns 13 catalog, cart, checkout and order tools with JSON Schema 2020-12 input schemas |
+| Storefront GraphQL | `/api/2026-01/graphql.json` | 200 — keyless introspection, 424 types; `shop.name` returns "True Botanicals" |
+| OAuth / OIDC discovery | `/.well-known/openid-configuration`, `/.well-known/oauth-authorization-server` | 200 — Shopify customer-accounts issuer for this shop |
+| Agent card | `/.well-known/agent-card.json`, `/.well-known/agent.json` | 404 on every host — no A2A artifact was written |
+| security.txt | `/.well-known/security.txt` | 404 — no vulnerability-disclosure or trust-centre programme found |
+
+**Provenance caveat, stated once and stated plainly.** The schemas behind these surfaces are authored by
+Shopify and UCP, not by True Botanicals, and every Shopify merchant gets them. They are recorded here because
+they are genuinely served from `truebotanicals.com` over this merchant's own data — not as evidence of an
+in-house API programme. Each artifact repeats the caveat in its own `x-provenance` block.
+
+**The finding worth knowing.** Discovery is anonymous; invocation is not. `tools/list` needs no credential,
+but every `tools/call` requires the *caller* to publish a resolvable UCP agent profile, and `get_order`
+requires a bearer JWT on top. There is no idempotency key anywhere in the tool set, no test mode, and no
+reversal for `complete_checkout` — carts and checkouts can be cancelled, completed purchases cannot.

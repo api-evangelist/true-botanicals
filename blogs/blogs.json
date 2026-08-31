@@ -1,0 +1,14 @@
+{
+  "repo": "true-botanicals",
+  "feeds": [
+    {
+      "source": "https://truebotanicals.com/account/login",
+      "feed_url": "https://truebotanicals.com/account/login",
+      "title": "",
+      "saved": 0,
+      "method": "none"
+    }
+  ],
+  "post_count": 0,
+  "fetched": "2026-08-30T22:33:40Z"
+}

@@ -9,6 +9,21 @@ description: 'True Botanicals is a clean-luxury skincare company selling clinica
   OpenID Connect discovery documents for Shopify customer accounts. Every artifact in this repo was probed live
   from truebotanicals.com; the schemas behind them are platform-authored by Shopify and shared with every Shopify
   merchant, and are recorded here as served, not as contracts True Botanicals authored.'
+accessModel:
+  pricing: unknown
+  onboarding: unknown
+  trial: false
+  try_now: false
+  public: false
+  label: Unknown
+  confidence: low
+  source:
+  - authentication
+  - scopes
+  - rate-limits
+  - security
+  generated: '2026-09-03'
+  method: derived
 image: https://truebotanicals.com/cdn/shop/files/TB_True_Botanicals_f873166b-61da-41ce-8c3d-ea2ab3565a12.png?v=1772667499
 url: https://raw.githubusercontent.com/api-evangelist/true-botanicals/refs/heads/main/apis.yml
 x-type: company

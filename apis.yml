@@ -69,6 +69,11 @@ apis:
   tags:
   - Agentic Commerce
   - MCP
+  - Universal Commerce Protocol
+  - Retail
+  tags_raw:
+  - Agentic Commerce
+  - MCP
   - UCP
   - Retail
   properties:

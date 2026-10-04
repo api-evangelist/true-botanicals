@@ -83,6 +83,9 @@ apis:
     url: mcp/true-botanicals-tool-crosswalk.yml
   - type: Documentation
     url: https://truebotanicals.com/agents.md
+  x-surface: platform-generated
+  x-platform: shopify
+  x-platform-surface: ucp
 - name: True Botanicals Storefront GraphQL (Shopify)
   description: 'The Shopify Storefront GraphQL API as served on True Botanicals'' own domain. Introspection and
     catalog queries answered keyless on 2026-08-30 (424 types; shop.name returned "True Botanicals"), so the
@@ -98,6 +101,9 @@ apis:
   properties:
   - type: GraphQL
     url: graphql/true-botanicals-graphql.yml
+  x-surface: platform-generated
+  x-platform: shopify
+  x-platform-surface: storefront-graphql
 maintainers:
 - FN: Kin Lane
   email: kin@apievangelist.com

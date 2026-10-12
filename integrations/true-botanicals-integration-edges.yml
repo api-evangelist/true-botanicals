@@ -1,0 +1,16 @@
+generated: '2026-10-12'
+method: none
+source:
+- https://zapier.com/apps/true-botanicals/integrations
+- https://n8n.io/integrations/true-botanicals/
+- https://composio.dev/toolkits/true-botanicals
+- https://monid.ai/tools/true-botanicals
+checked:
+- https://composio.dev/toolkits/true-botanicals
+- https://monid.ai/tools/true-botanicals
+- https://n8n.io/integrations/true-botanicals/
+- https://zapier.com/apps/true-botanicals/integrations
+summary: null
+marketplace_apps: []
+edges: []
+templates: []
